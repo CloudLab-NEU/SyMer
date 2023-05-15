@@ -34,13 +34,15 @@ def get_args():
                         default="./data/deepcom.train")
     parser.add_argument("--test_path",
                         default="./data/deepcom.test")
+    parser.add_argument("--valid_path",
+                        default="./data/deepcom.valid")
     parser.add_argument("--train_num", type=int, default=445763)
     parser.add_argument("--test_num", type=int, default=19999)
+    parser.add_argument("--valid_num", type=int, default=19999)
 
     parser.add_argument("--save_name", required=False, default="n")
     parser.add_argument("--num_workers", type=int,
                         default=0)
-    parser.add_argument("--gpu", type=int, default=0)
 
     parser.add_argument("--d_model", type=int, default=512)
     parser.add_argument("--d_k", type=int, default=64)

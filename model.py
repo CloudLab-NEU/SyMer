@@ -2,13 +2,13 @@ from module import Encoder, Decoder
 import torch.nn as nn
 
 
-class HierarchicalTransformer(nn.Module):
-    def __init__(self, args, node_dict, terminal_dict, target_dict, max_target_len):
-        super(HierarchicalTransformer, self).__init__()
-        self.encoder = Encoder(args=args, node_dict=node_dict, terminal_dict=terminal_dict).cuda()
+class SyMer(nn.Module):
+    def __init__(self, args, node_dict, terminal_dict, target_dict):
+        super(SyMer, self).__init__()
+        self.encoder = Encoder(args=args, node_dict=node_dict, terminal_dict=terminal_dict).to(args.device)
         self.decoder = Decoder(args=args, target_dict=target_dict, node_dict=node_dict, terminal_dict=terminal_dict,
-                               max_target_len=max_target_len).cuda()
-        self.projection = nn.Linear(args.d_model, len(target_dict), bias=False).cuda()
+                               max_target_len=2 + args.max_deepcom_target_length).to(args.device)
+        self.projection = nn.Linear(args.d_model, len(target_dict), bias=False).to(args.device)
 
     def forward(self, enc_inputs_node, enc_inputs_terminal, ver_indices, hor_indices, dec_inputs):
         """

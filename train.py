@@ -8,10 +8,10 @@ import time
 import torch.nn.init as init
 
 from torch.utils.data import DataLoader
-from dataset import DeepcomDataset, SymerDataset
+from dataset import SymerDataset
 from args import get_args
 from common import get_dict, Common
-from model import HierarchicalTransformer
+from model import SyMer
 from opt import LossCompute, NoamOpt, LabelSmoothing
 from utils.eval import greedy_decoder, print_predict
 
@@ -54,7 +54,7 @@ def run_train_epoch(data_loader, model, loss_compute, epoch, target_dict, log_in
     return total_loss / total_step
 
 
-def run_eval_epoch_deepcom(args, data_loader, model, target_dict, save_name):
+def run_eval_epoch(args, data_loader, model, target_dict, save_name):
     with open("output/{}.txt".format(save_name), "w") as file:
         for i, batch in enumerate(data_loader):
             [input_node, ver_indices, hor_indices, target, input_terminal] = batch
@@ -96,8 +96,7 @@ if __name__ == '__main__':
         drop_last=True
     )
 
-    hierarchical_transformer = HierarchicalTransformer(args, node_dict, terminal_dict,
-                                                       target_dict, args.max_deepcom_target_length + 2).cuda()
+    symer = SyMer(args, node_dict, terminal_dict, target_dict).cuda()
 
     criterion = LabelSmoothing(size=len(target_dict), padding_idx=target_dict[Common.PAD],
                                smoothing=0.1)
@@ -108,11 +107,11 @@ if __name__ == '__main__':
     if args.load_model:
         _epoch_idx = re.search("\d", args.load_model).start()
         checkpoint = torch.load(args.load_model, map_location='cpu')
-        hierarchical_transformer.load_state_dict(checkpoint['model'])
+        symer.load_state_dict(checkpoint['model'])
         epoch_start = checkpoint['epoch'] + 1
         model_opt = NoamOpt(d_model=args.d_model, warmup=checkpoint['opt_warmup'],
                             optimizer=torch.optim.Adam(
-                                hierarchical_transformer.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9),
+                                symer.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9),
                             start_step=checkpoint['step'],
                             scale=args.lr_scale)
         model_opt.load_optimizer(checkpoint['optimizer'])
@@ -122,29 +121,28 @@ if __name__ == '__main__':
     else:
         model_opt = NoamOpt(d_model=args.d_model, warmup=4000,
                             optimizer=torch.optim.Adam(
-                                hierarchical_transformer.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9),
+                                symer.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9),
                             start_step=0,
                             scale=args.lr_scale)
         if args.init:
-            for p in hierarchical_transformer.parameters():
+            for p in symer.parameters():
                 if p.dim() > 1:
                     init.xavier_uniform_(p)
 
     print("-------{}-------".format(time.asctime(time.localtime(time.time()))))
 
     for epoch in range(epoch_start, epoch_start + args.epoch):
-        hierarchical_transformer.train()
-        loss = run_train_epoch(data_loader=trainLoader, model=hierarchical_transformer,
+        symer.train()
+        loss = run_train_epoch(data_loader=trainLoader, model=symer,
                                loss_compute=LossCompute(target_dict, criterion, model_opt, amp=args.amp), epoch=epoch,
                                target_dict=target_dict, amp=args.amp, log_interval=args.log_interval)
 
-        hierarchical_transformer.eval()
-        run_eval_epoch_deepcom(args, testLoader, hierarchical_transformer, target_dict,
-                               args.save_name + str(epoch))
+        symer.eval()
+        run_eval_epoch(args, testLoader, symer, target_dict, args.save_name + str(epoch))
         rouge_score, ba_score, meteor_score = evaluate(args.save_name + str(epoch), True)
 
         save_name = "model/{}{}_Ba{}_Me{}_Rl{}.pt".format(args.save_name, str(epoch),
                                                           ba_score, meteor_score, rouge_score)
-        save_model(save_name, epoch, hierarchical_transformer,
+        save_model(save_name, epoch, symer,
                    model_opt.optimizer,
                    model_opt.get_step(), model_opt.warmup)
