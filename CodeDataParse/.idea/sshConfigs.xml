@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="yons-desktop" id="8617231a-1dda-42da-bf7d-aa1ce8a50dd8" port="22" nameFormat="DESCRIPTIVE" username="marcguo" />
+    </configs>
+  </component>
+</project>

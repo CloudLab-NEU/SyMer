@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JavaExtractor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/JavaExtractor_jar</output-path>
+    <root id="archive" name="JavaExtractor.jar">
+      <element id="module-output" name="JavaExtractor" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/json/javax.json-api/1.1.4/javax.json-api-1.1.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/args4j/args4j/2.33/args4j-2.33.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.0.0-alpha.4/javaparser-core-3.0.0-alpha.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="53671202-5fc0-49b4-9e43-44a5dede81db" name="1080ti">
+        <fileTransfer rootFolder="/home/marcguo/zzx" accessType="SFTP" host="yons-desktop" port="22" sshConfigId="8617231a-1dda-42da-bf7d-aa1ce8a50dd8" sshConfig="marcguo@yons-desktop:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
