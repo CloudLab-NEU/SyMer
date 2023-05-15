@@ -52,3 +52,47 @@ def _greedy_decoder(args, model, start_symbol, input_node,
         prob = projected.max(dim=-1, keepdim=False)[1]
         next_symbol = prob.data[:, i]
     return dec_inputs
+
+
+def get_eval_result(outputs, targets, target_dict):
+    true_positive, false_positive, false_negative = 0, 0, 0
+
+    for pre, tgt in zip(outputs, targets):
+        for word in pre:
+            if word == target_dict[Common.EOS]:
+                break
+            if word_make_sense(word, target_dict):
+                if word in tgt:
+                    true_positive += 1
+                else:
+                    false_positive += 1
+
+        for word in tgt:
+            if word == target_dict[Common.EOS]:
+                break
+            if word_make_sense(word, target_dict):
+                if word not in pre:
+                    false_negative += 1
+
+    return true_positive, false_positive, false_negative
+
+
+def word_make_sense(word, target_dict):
+    return word != target_dict[Common.PAD] and word != target_dict[Common.UNK] \
+           and word != target_dict[Common.BOS]
+
+
+def calculate_f1_scores(true_positive, false_positive, false_negative):
+    if true_positive + false_positive > 0:
+        precision = true_positive / (true_positive + false_positive)
+    else:
+        precision = 0
+    if true_positive + false_negative > 0:
+        recall = true_positive / (true_positive + false_negative)
+    else:
+        recall = 0
+    if precision + recall > 0:
+        f1 = 2 * precision * recall / (precision + recall)
+    else:
+        f1 = 0
+    return precision, recall, f1

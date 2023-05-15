@@ -1,5 +1,7 @@
 import argparse
 
+import torch
+
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -9,6 +11,8 @@ def get_args():
     parser.add_argument("--save", action="store_false")
     parser.add_argument("--batch_size", "-b", type=int,
                         default=128)
+
+    parser.add_argument("--device", default=torch.device("cuda"))
 
     parser.add_argument("--lr_scale", required=False, default=1, type=float)
 
@@ -27,9 +31,9 @@ def get_args():
     parser.add_argument("--data_path",
                         default="./data/deepcom.dict.psc")
     parser.add_argument("--train_path",
-                        default="./data/deepcom.train.h5")
+                        default="./data/deepcom.train")
     parser.add_argument("--test_path",
-                        default="./data/deepcom.test.h5")
+                        default="./data/deepcom.test")
     parser.add_argument("--train_num", type=int, default=445763)
     parser.add_argument("--test_num", type=int, default=19999)
 

@@ -8,7 +8,7 @@ import time
 import torch.nn.init as init
 
 from torch.utils.data import DataLoader
-from dataset import DeepcomDataset
+from dataset import DeepcomDataset, SymerDataset
 from args import get_args
 from common import get_dict, Common
 from model import HierarchicalTransformer
@@ -74,32 +74,23 @@ if __name__ == '__main__':
 
     gc.collect()
     torch.cuda.empty_cache()
-    # os.environ['CUDA_VISIBLE_DEVICE'] = str(args.gpu)
-
-    # train_code_h5 = h5py.File(args.train_path + ".code.h5", "r")
-    # train_nl_h5 = h5py.File(args.train_path + ".nl.h5", "r")
-    #
-    # test_code_h5 = h5py.File(args.test_path + ".code.h5", "r")
-    # test_nl_h5 = h5py.File(args.test_path + ".nl.h5", "r")
-    train_h5 = h5py.File(args.train_path, "r")
-    test_h5 = h5py.File(args.test_path, "r")
 
     node_dict, terminal_dict, target_dict = get_dict(args.data_path)
 
     trainLoader = DataLoader(
-        DeepcomDataset(args=args, file=train_h5,
-                       data_size=args.train_num, node_dict=node_dict,
-                       terminal_dict=terminal_dict, target_dict=target_dict),
+        SymerDataset(args=args, file=args.train_path,
+                     data_size=args.train_num, node_dict=node_dict,
+                     terminal_dict=terminal_dict, target_dict=target_dict),
         batch_size=args.batch_size,
         shuffle=True, num_workers=args.num_workers,
         drop_last=True
     )
 
     testLoader = DataLoader(
-        DeepcomDataset(args=args, file=test_h5,
-                       data_size=args.test_num,
-                       node_dict=node_dict,
-                       terminal_dict=terminal_dict, target_dict=target_dict),
+        SymerDataset(args=args, file=args.test_path,
+                     data_size=args.test_num,
+                     node_dict=node_dict,
+                     terminal_dict=terminal_dict, target_dict=target_dict),
         batch_size=args.batch_size,
         shuffle=False, num_workers=args.num_workers,
         drop_last=True

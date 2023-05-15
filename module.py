@@ -1,9 +1,10 @@
 from common import Common
-from layer import DecoderLayer
-from position import LearnedEncoderPositionalEncoding
+from layer import DecoderLayer, EncoderLayer
+from position import LearnedEncoderPositionalEncoding, DecoderPositionalEncoding
 
 import torch.nn as nn
 import torch
+import numpy as np
 
 
 class Encoder(nn.Module):
@@ -71,6 +72,7 @@ class Encoder(nn.Module):
         batch_size, m_c_l = node_len.size()
         enc_self_attn_mask = node_len.eq(1).unsqueeze(1)  # [B, 1, m_c_l]
         return enc_self_attn_mask.expand(batch_size, m_c_l, m_c_l)  # [B, m_c_l, m_c_l]
+
 
 class Decoder(nn.Module):
     def __init__(self, args, target_dict, node_dict, terminal_dict, max_target_len):

@@ -10,7 +10,7 @@ from torch.autograd import Variable
 from tqdm import trange
 
 from common import target2outputs, Common
-from utils.eval_result import greedy_decoder, get_eval_result, calculate_f1_scores, print_predict
+from utils.eval import greedy_decoder, get_eval_result, calculate_f1_scores, print_predict
 
 
 class NoamOpt:
